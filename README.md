@@ -6,7 +6,7 @@ Code of [Shi, H., Lu, L., Yin, M., Zhong, C., & Yang, F. (2023). Joint few-shot 
 
 参考：[使用 VS Code + Remote-SSH 插件在本地跑超算](https://blog.csdn.net/qq_36484003/article/details/109595387)
 
-注意 `~/.ssh/config` 文件中填入以下：
+注意本地的 `~/.ssh/config` 文件中填入以下：
 
 ```shell script
 # 超算 Remote-SSH
