@@ -1,5 +1,8 @@
 # highcharts - https://www.highcharts.com
 
+| DSC 箱线图 |
+| --- |
+|![](boxplot.png)|
 
 - 先运行 `get_boxplot_value.py` 得到箱线图数据；
   - 根据保存的 log 提取 dsc 数值，可根据具体情况获取。

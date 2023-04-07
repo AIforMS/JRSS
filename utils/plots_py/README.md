@@ -1,5 +1,9 @@
 ## 实验结果示例可视化
 
+| img | seg | contour |
+| --- | --- | --- |
+|![](img_tcia_08.jpg)| ![](seg_tcia_08.jpg) | ![](seg_tcia_08_.jpg) |
+
 我使用 `contour_with_mask.py` 将分割标签的轮廓画到图像切片上。
 
 - 用 ITK-SNAP 选取一个好看的切片截图保存，分割标签截取同样位置的切片；
