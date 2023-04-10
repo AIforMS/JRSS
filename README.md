@@ -1,12 +1,13 @@
 # JRSS
 Code of [Shi, H., Lu, L., Yin, M., Zhong, C., & Yang, F. (2023). Joint few-shot registration and segmentation self-training of 3D medical images. Biomedical Signal Processing and Control, 80, 104294.](https://doi.org/10.1016/j.bspc.2022.104294)
 
+Coming Soon :stuck_out_tongue_winking_eye:
 
 ## VS Code 远程链接超算
 
 参考：[使用 VS Code + Remote-SSH 插件在本地跑超算](https://blog.csdn.net/qq_36484003/article/details/109595387)
 
-注意 `~/.ssh/config` 文件中填入以下：
+注意本地的 `~/.ssh/config` 文件中填入以下：
 
 ```shell script
 # 超算 Remote-SSH
