@@ -16,7 +16,7 @@ from monai.networks.nets import SwinUNETR
 from models import SpatialTransformer
 
 from utils.utils import get_logger, countParam, LinearWarmupCosineAnnealingLR, ImgTransform, setup_seed
-from utils.datasets import RegDataset
+from utils.datasets import MultiModalDataset
 # losses
 from utils.losses import MIND_loss, NCCLoss, gradient_loss, MutualInformation as MI, TI_Loss
 from monai.losses import DiceCELoss, BendingEnergyLoss
@@ -129,19 +129,19 @@ def main():
     # load train images and segmentations
     logger.info(f'train pair_numbers: {args.train_pair_numbers}')
 
-    train_dataset = RegDataset(mov_folder=args.mov_folder,
-                               mov_name=args.mov_name,
-                               fix_folder=args.fix_folder,
-                               fix_name=args.fix_name,
-                               pair_numbers=args.train_pair_numbers,
-                               img_transform=ImgTransform("max-min"))
+    train_dataset = MultiModalDataset(mov_folder=args.mov_folder,
+                                      mov_name=args.mov_name,
+                                      fix_folder=args.fix_folder,
+                                      fix_name=args.fix_name,
+                                      pair_numbers=args.train_pair_numbers,
+                                      img_transform=ImgTransform("max-min"))
 
-    val_dataset = RegDataset(mov_folder=args.mov_folder,
-                             mov_name=args.mov_name,
-                             fix_folder=args.fix_folder,
-                             fix_name=args.fix_name,
-                             pair_numbers=args.val_pair_numbers,
-                             img_transform=ImgTransform("max-min"))
+    val_dataset = MultiModalDataset(mov_folder=args.mov_folder,
+                                    mov_name=args.mov_name,
+                                    fix_folder=args.fix_folder,
+                                    fix_name=args.fix_name,
+                                    pair_numbers=args.val_pair_numbers,
+                                    img_transform=ImgTransform("max-min"))
 
     train_loader = DataLoader(dataset=train_dataset, batch_size=args.batch_size,
                               shuffle=True, num_workers=args.num_workers)

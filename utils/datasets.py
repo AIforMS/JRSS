@@ -7,7 +7,7 @@ from torch.utils.data import Dataset, DataLoader
 from utils import ImgTransform
 
 
-class RegDataset(Dataset):
+class MultiModalDataset(Dataset):
     def __init__(self,
                  mov_folder,
                  mov_name,
@@ -16,7 +16,7 @@ class RegDataset(Dataset):
                  pair_numbers,
                  img_transform=ImgTransform(scale_type="max-min"),
                  for_inf=False):
-        super(RegDataset, self).__init__()
+        super(MultiModalDataset, self).__init__()
 
         self.for_inf = for_inf
 
@@ -97,7 +97,7 @@ class RegDataset(Dataset):
         return int(len(self.mov_segs[0].unique()))
 
 
-class SegDataset(Dataset):
+class SingleModalDataset(Dataset):
     def __init__(self,
                  image_folder,
                  image_name,
@@ -106,7 +106,7 @@ class SegDataset(Dataset):
                  scannumbers,
                  img_transform="max-min",
                  for_inf=False):
-        super(SegDataset, self).__init__()
+        super(SingleModalDataset, self).__init__()
         self.for_inf = for_inf
 
         if image_name.find("?") == -1 or label_name.find("?") == -1:
@@ -163,7 +163,7 @@ class SegDataset(Dataset):
 
 
 if __name__ == '__main__':
-    my_dataset = RegDataset(
+    my_dataset = MultiModalDataset(
         mov_folder=r"F:\shb_src\from_github\datasets\MICCAI2021\task1_preprocessed_by_shb\auxiliary\L2R_Task1_CT",
         mov_name=r"?_bcv_CT.nii.gz",
         fix_folder=r"F:\shb_src\from_github\datasets\MICCAI2021\task1_preprocessed_by_shb\auxiliary\L2R_Task1_MR",

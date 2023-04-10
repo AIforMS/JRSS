@@ -8,7 +8,7 @@ from torch.utils.data import DataLoader
 
 from utils.metrics import dice_coeff
 from utils.utils import ImgTransform, get_logger
-from utils.datasets import RegDataset
+from utils.datasets import MultiModalDataset
 from models import VxmDense, SpatialTransformer
 from monai.networks.nets import SwinUNETR
 
@@ -115,13 +115,13 @@ def main():
     # load images
     numbers = args.test_pair_numbers
 
-    test_dataset = RegDataset(mov_folder=args.mov_folder,
-                              mov_name=args.mov_name,
-                              fix_folder=args.fix_folder,
-                              fix_name=args.fix_name,
-                              pair_numbers=numbers,
-                              img_transform=ImgTransform("max-min"),
-                              for_inf=True)
+    test_dataset = MultiModalDataset(mov_folder=args.mov_folder,
+                                     mov_name=args.mov_name,
+                                     fix_folder=args.fix_folder,
+                                     fix_name=args.fix_name,
+                                     pair_numbers=numbers,
+                                     img_transform=ImgTransform("max-min"),
+                                     for_inf=True)
 
     test_loader = DataLoader(dataset=test_dataset, batch_size=1, num_workers=args.num_workers)
 

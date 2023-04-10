@@ -14,7 +14,7 @@ cuda_idx = 0
 
 from utils.utils import countParam, get_logger
 from utils.metrics import dice_coeff
-from utils.datasets import SegDataset
+from utils.datasets import SingleModalDataset
 from torch.utils.data import DataLoader
 from models.obelisk import Seg_Obelisk_Unet
 from monai.networks.nets import SwinUNETR
@@ -151,13 +151,13 @@ def main():
         inference(img_val, seg_val, save_name='')
     elif os.path.isdir(d_options['image_dir']):
         scale_type = "old-way" if d_options['old_model'] else d_options['img_transform']
-        test_dataset = SegDataset(image_folder=d_options['image_dir'],
-                                  image_name=d_options['img_name'],
-                                  label_folder=d_options['label_dir'],
-                                  label_name=d_options['label_name'],
-                                  scannumbers=d_options['inf_numbers'],
-                                  img_transform=scale_type,
-                                  for_inf=True)
+        test_dataset = SingleModalDataset(image_folder=d_options['image_dir'],
+                                          image_name=d_options['img_name'],
+                                          label_folder=d_options['label_dir'],
+                                          label_name=d_options['label_name'],
+                                          scannumbers=d_options['inf_numbers'],
+                                          img_transform=scale_type,
+                                          for_inf=True)
         test_loader = DataLoader(dataset=test_dataset, batch_size=1)
 
         for idx, (moving_img, moving_label, img_affine, seg_affine) in enumerate(test_loader):
