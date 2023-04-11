@@ -1,11 +1,8 @@
 import os
 import pathlib
 
-import visdom
-from visualdl import LogWriter
 
-
-def visualdl_scalar_lines(args, epoch, losses, accs, best_acc, lr, accs_bi=None):
+def visualdl_scalar_lines(writer, args, epoch, losses, accs, best_acc, lr, accs_bi=None):
     """
     Doc: https://gitee.com/paddlepaddle/VisualDL/tree/develop/docs/components#visualdl-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97
     URL: http://localhost:8040/app/scalar
@@ -17,33 +14,29 @@ def visualdl_scalar_lines(args, epoch, losses, accs, best_acc, lr, accs_bi=None)
         :best_acc: beast_acc
         :lr: latest lr with lr decay 
     """
-    logdir = os.path.join(args.output, "scalar_lines")
-    if not os.path.exists(logdir):
-        pathlib.Path(logdir).mkdir(parents=True, exist_ok=True)
 
     ROIs = ['spleen', 'pancreas', 'kidney', 'gallbladder', 'esophagus', 'liver',
             'stomach', 'duodenum'] if args.dataset == 'tcia' \
         else ['liver', 'spleen', 'r_kidney', 'l_kidney']
 
-    with LogWriter(logdir) as writer:
-        # losses
-        writer.add_scalar(tag="loss/total_loss", step=epoch, value=losses[epoch, 0])
-        writer.add_scalar(tag="loss/sim_loss", step=epoch, value=losses[epoch, 1])
-        writer.add_scalar(tag="loss/grad_loss", step=epoch, value=losses[epoch, 2])
-        writer.add_scalar(tag="loss/seg_loss", step=epoch, value=losses[epoch, 3])
-        writer.add_scalar(tag="loss/ti_loss", step=epoch, value=losses[epoch, 4])
-        # accs
-        for idx, label in enumerate(ROIs):
-            writer.add_scalar(tag=f"acc/{label}", step=epoch, value=accs[idx])
-        writer.add_scalar(tag="acc/mean", step=epoch, value=accs.mean())
-        if args.bidir:
-            writer.add_scalar(tag="acc/mean_bi", step=epoch, value=accs_bi.mean())
-        writer.add_scalar(tag="acc/best", step=epoch, value=best_acc)
-        # lr decay
-        writer.add_scalar(tag="lr/lr", step=epoch, value=lr)
+    # losses
+    writer.add_scalar(tag="loss/total_loss", step=epoch, value=losses[epoch, 0])
+    writer.add_scalar(tag="loss/sim_loss", step=epoch, value=losses[epoch, 1])
+    writer.add_scalar(tag="loss/grad_loss", step=epoch, value=losses[epoch, 2])
+    writer.add_scalar(tag="loss/seg_loss", step=epoch, value=losses[epoch, 3])
+    writer.add_scalar(tag="loss/ti_loss", step=epoch, value=losses[epoch, 4])
+    # accs
+    for idx, label in enumerate(ROIs):
+        writer.add_scalar(tag=f"acc/{label}", step=epoch, value=accs[idx])
+    writer.add_scalar(tag="acc/mean", step=epoch, value=accs.mean())
+    if args.bidir:
+        writer.add_scalar(tag="acc/mean_bi", step=epoch, value=accs_bi.mean())
+    writer.add_scalar(tag="acc/best", step=epoch, value=best_acc)
+    # lr decay
+    writer.add_scalar(tag="lr/lr", step=epoch, value=lr)
 
 
-def visualdl_images(args, step, seg_moved, seg_fixed):
+def visualdl_images(writer, args, step, seg_moved, seg_fixed):
     """
     URL: http://localhost:8040/app/sample/image
     Params:
@@ -63,16 +56,15 @@ def visualdl_images(args, step, seg_moved, seg_fixed):
     seg_slice_m = seg_m_np[:, [68], :].T.transpose((0, 2, 1)).repeat(3, axis=2) * scale  # 冠状面
     seg_slice_f = seg_f_np[:, [68], :].T.transpose((0, 2, 1)).repeat(3, axis=2) * scale  # 冠状面
 
-    with LogWriter(logdir) as writer:
-        writer.add_image(tag="seg/moved", step=step, img=seg_slice_m, dataformats="HWC")
-        writer.add_image(tag="seg/fixed", step=step, img=seg_slice_f, dataformats="HWC")
+    writer.add_image(tag="seg/moved", step=step, img=seg_slice_m, dataformats="HWC")
+    writer.add_image(tag="seg/fixed", step=step, img=seg_slice_f, dataformats="HWC")
 
 
 """
 for visdom
 """
 
-def visdom_scalar_lines(args, epoch, losses, accs, lr):
+def visdom_scalar_lines(vis, args, epoch, losses, accs, lr):
     """
     URL: http://localhost:8097
     Params:
@@ -81,7 +73,6 @@ def visdom_scalar_lines(args, epoch, losses, accs, lr):
         :accs: validation dsc list
         :lr: latest lr with lr decay 
     """
-    vis = visdom.Visdom()
 
     loss_opts = {'xlabel': 'epochs',
                  'ylabel': 'loss',
@@ -104,14 +95,13 @@ def visdom_scalar_lines(args, epoch, losses, accs, lr):
     vis.line(Y=[lr], X=[epoch], win='lr', update='append', opts=lr_opts)
 
 
-def visdom_images(args, seg_moved, seg_fixed):
+def visdom_images(vis, args, seg_moved, seg_fixed):
     """
     URL: http://localhost:8097
     Params:
         :seg_moved: seg_moved tensor
         :seg_fixed: seg_fixed tensor
     """
-    vis = visdom.Visdom()
 
     seg_m_np = seg_moved[0].int().cpu()
     seg_f_np = seg_fixed[0].int().cpu()

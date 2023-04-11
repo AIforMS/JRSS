@@ -4,6 +4,8 @@ import argparse
 import pathlib
 import numpy as np
 import itertools
+import visdom
+from visualdl import LogWriter
 
 import torch
 import torch.nn as nn
@@ -115,8 +117,13 @@ def main():
     logger = get_logger(args.output)
 
     if args.is_visdom:
+        vis = visdom.Visdom()
         logger.info("visdom starting, need to open the server: python -m visdom.server")
     if args.is_visualdl:
+        vd_logdir = os.path.join(args.output, "scalar_lines")
+        if not os.path.exists(vd_logdir):
+            pathlib.Path(vd_logdir).mkdir(parents=True, exist_ok=True)
+        writer = LogWriter(vd_logdir)
         logger.info(f"visualDL starting, need to open the server: visualdl --logdir {args.output}")
 
     if args.weakly_sup:
@@ -333,7 +340,7 @@ def main():
                     Jac_neg.append(100 * ((jacdet <= 0.).sum() / jacdet.numel()))
 
                     if args.is_visualdl:
-                        visualdl_images(args, step=val_idx, seg_moved=moved_seg, seg_fixed=fix_seg)
+                        visualdl_images(writer, args, step=val_idx, seg_moved=moved_seg, seg_fixed=fix_seg)
 
             # logger some feedback information
             dsc_avg_list = dsc_list.mean(axis=0)
@@ -354,10 +361,10 @@ def main():
                 f"lr {latest_lr :.8f}")
 
             if args.is_visdom:
-                visdom_scalar_lines(args, epoch, losses=run_loss, accs=dsc_avg_list, lr=latest_lr)
+                visdom_scalar_lines(vis, args, epoch, losses=run_loss, accs=dsc_avg_list, lr=latest_lr)
 
             if args.is_visualdl:
-                visualdl_scalar_lines(args, epoch, losses=run_loss, accs=dsc_avg_list,
+                visualdl_scalar_lines(writer, args, epoch, losses=run_loss, accs=dsc_avg_list,
                                       best_acc=best_acc, lr=latest_lr, accs_bi=None)
 
             reg_net.cpu()
