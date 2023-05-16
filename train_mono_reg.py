@@ -389,6 +389,8 @@ def main():
             reg_net.train()
             reg_net.to(device)
 
+    writer.close()
+
 
 if __name__ == '__main__':
     main()
